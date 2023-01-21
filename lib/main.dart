@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:savings_flutter/repositories/wallet_repository.dart';
-import 'package:savings_flutter/screens/home_screen.dart';
-
-import 'blocs/home/home_bloc.dart';
+import 'package:savings_flutter/screens/loginscreen.dart';
 
 void main() {
   runApp(const SavingsApp());
@@ -19,9 +15,6 @@ class SavingsApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: BlocProvider(
-          create: (context) => HomeBloc(WalletRepository()),
-          child: HomeScreen(),
-        ));
+        home: const LoginScreen(title: 'Flutter Demo Home Page'));
   }
 }

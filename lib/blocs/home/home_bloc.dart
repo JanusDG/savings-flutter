@@ -7,9 +7,9 @@ import '../../models/wallet.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final WalletRepository _walletRepository;
-  final uid = 12;
+  final int uid;
 
-  HomeBloc(this._walletRepository) : super(HomeIdle()) {
+  HomeBloc(this._walletRepository, this.uid) : super(HomeIdle()) {
     on<FetchWallets>((event, emit) async {
       try {
         emit(HomeLoading());

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:savings_flutter/requests/login.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:savings_flutter/models/login.dart';
 import 'package:savings_flutter/constants/authconstants.dart';
-import 'package:savings_flutter/screens/demoscreen.dart';
+
+import '../blocs/home/home_bloc.dart';
+import '../repositories/wallet_repository.dart';
+import '../repositories/login_repository.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.title});
@@ -13,8 +18,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginScreen> {
-  Future<Resp>? futureResp;
+  Future<LoginResp>? futureLoginResp;
   late String loginButtonText;
+  late int uid;
 
   // ignore: todo
   // TODO remove initial value after developement is finished
@@ -49,13 +55,15 @@ class _LoginState extends State<LoginScreen> {
         builder: (BuildContext context) =>
             _buildLoginErrorPopUp(context, LoginConstants.emptyFieldText),
       );
+      return;
     }
 
-    futureResp =
-        createRespInPost(_controllerUsername.text, _controllerPassword.text);
+    futureLoginResp =
+        getLoginResponce(_controllerUsername.text, _controllerPassword.text);
 
-    futureResp?.then((value) {
+    futureLoginResp?.then((value) {
       loginButtonText = value.message;
+      uid = value.uid;
       if (value.message != "") {
         showDialog(
           context: context,
@@ -96,11 +104,16 @@ class _LoginState extends State<LoginScreen> {
             setState(() {
               validateLogin();
             });
-            futureResp?.whenComplete(() {
+            futureLoginResp?.whenComplete(() {
               if (loginButtonText.isEmpty) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const DemoPage(title: "Demo"),
+                    builder: (context) {
+                      return BlocProvider(
+                        create: (context) => HomeBloc(WalletRepository(), uid),
+                        child: HomeScreen(),
+                      );
+                    },
                   ),
                 );
               }
@@ -112,9 +125,9 @@ class _LoginState extends State<LoginScreen> {
     );
   }
 
-  FutureBuilder<Resp> futureBuilderPostPass() {
-    return FutureBuilder<Resp>(
-      future: futureResp,
+  FutureBuilder<LoginResp> futureBuilderPostPass() {
+    return FutureBuilder<LoginResp>(
+      future: futureLoginResp,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(
