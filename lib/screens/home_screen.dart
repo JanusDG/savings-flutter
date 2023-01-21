@@ -20,6 +20,9 @@ class HomeScreen extends StatelessWidget {
           if (state is HomeLoading) {
             return const CircularProgressIndicator();
           }
+          if (state is HomeEmpty) {
+            return const Text('You have no wallets yet');
+          }
           if (state is HomeError) {
             return Column(mainAxisSize: MainAxisSize.min, children: [
               Text('Error: ${state.errorMsg}'),
@@ -38,7 +41,9 @@ class HomeScreen extends StatelessWidget {
                 itemBuilder: (context, index) =>
                     WalletCard(wallet: state.wallets[index]));
           }
-          fetchWallets(context);
+          if (state is HomeIdle) {
+            fetchWallets(context);
+          }
           return const SizedBox.shrink();
         }),
       ),

@@ -14,7 +14,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       try {
         emit(HomeLoading());
         List<Wallet> data = await _walletRepository.fetchWallets(uid);
-        emit(HomeSuccess(wallets: data));
+        if (data.isEmpty) {
+          emit(HomeEmpty());
+        } else {
+          emit(HomeSuccess(wallets: data));
+        }
       } catch (e) {
         emit(HomeError(errorMsg: e.toString()));
       }
