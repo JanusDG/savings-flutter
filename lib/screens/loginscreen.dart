@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:savings_flutter/models/login.dart';
-import 'package:savings_flutter/constants/authconstants.dart';
+import 'package:savings_flutter/constants/app_strings.dart';
 
 import '../blocs/home/home_bloc.dart';
 import '../repositories/wallet_repository.dart';
@@ -53,7 +53,7 @@ class _LoginState extends State<LoginScreen> {
       showDialog(
         context: context,
         builder: (BuildContext context) =>
-            _buildLoginErrorPopUp(context, LoginConstants.emptyFieldText),
+            _buildLoginErrorPopUp(context, AppStrings.emptyFieldText),
       );
       return;
     }
@@ -68,7 +68,7 @@ class _LoginState extends State<LoginScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) =>
-              _buildLoginErrorPopUp(context, LoginConstants.invalidUserOrPass),
+              _buildLoginErrorPopUp(context, AppStrings.invalidUserOrPass),
         );
       }
     });
@@ -76,7 +76,7 @@ class _LoginState extends State<LoginScreen> {
 
   Widget _buildLoginErrorPopUp(BuildContext context, String loginPopUpText) {
     return AlertDialog(
-      title: const Text(LoginConstants.loginError),
+      title: const Text(AppStrings.loginError),
       content: Text(loginPopUpText),
       actions: [
         TextButton(
@@ -111,7 +111,7 @@ class _LoginState extends State<LoginScreen> {
                     builder: (context) {
                       return BlocProvider(
                         create: (context) => HomeBloc(WalletRepository(), uid),
-                        child: HomeScreen(),
+                        child: const HomeScreen(title: AppStrings.appName),
                       );
                     },
                   ),
@@ -119,7 +119,7 @@ class _LoginState extends State<LoginScreen> {
               }
             });
           },
-          child: const Text(LoginConstants.loginButtonText),
+          child: const Text(AppStrings.loginButtonText),
         ),
       ],
     );
