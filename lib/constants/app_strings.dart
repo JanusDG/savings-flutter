@@ -1,5 +1,6 @@
 class AppStrings {
   static const appName = 'Savings';
+  static const newWalletScreen = 'Add new wallet';
 
   static const loginError = 'Login Error';
   static const emptyFieldText =

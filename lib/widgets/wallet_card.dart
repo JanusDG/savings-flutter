@@ -26,7 +26,7 @@ class WalletCard extends StatelessWidget {
                   Text(wallet.name,
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("${wallet.bankName}")
+                  Text("${wallet.bankName} - ${wallet.typeName}")
                 ],
               ),
               const Spacer(),

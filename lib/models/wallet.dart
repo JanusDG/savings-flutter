@@ -1,17 +1,21 @@
+import 'package:savings_flutter/models/wallet_type.dart';
+
 class Wallet {
   int? id;
   int? typeId;
+  String typeName = '';
   int? userId;
   String name = '';
   int balance = 0;
   String currency = '';
   int? bankId;
-  String? bankName = '';
-  String? bankImg = 'logo.png';
+  String bankName = '';
+  String bankImg = 'logo.png';
 
-  Wallet.fromJson(Map<String, dynamic> json) {
+  Wallet.fromJson(Map<String, dynamic> json, List<WalletType> types) {
     id = json['id'];
     typeId = json['s_id'];
+    typeName = types.firstWhere((type) => type.id == json['s_id']).name;
     userId = json['s_uid'];
     name = json['s_name'];
     balance = json['s_balance'];
