@@ -25,8 +25,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeState extends State<HomeScreen> {
   final WalletRepository repository = WalletRepository();
 
-  // final formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,13 +69,15 @@ class _HomeState extends State<HomeScreen> {
                       )
                     ],
                   ),
-                  ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemCount: state.wallets.length,
-                      itemBuilder: (context, index) =>
-                          WalletCard(wallet: state.wallets[index])),
+                  BlocProvider.value(
+                      value: BlocProvider.of<HomeBloc>(context),
+                      child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: state.wallets.length,
+                          itemBuilder: (context, index) =>
+                              WalletCard(wallet: state.wallets[index]))),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -140,8 +140,4 @@ class _HomeState extends State<HomeScreen> {
       );
     }
   }
-
-// void fetchTransactions(BuildContext context) {
-//   context.read<HomeBloc>().add(FetchTransactions());
-// }
 }
