@@ -154,7 +154,7 @@ class NewTransactionPopUp extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         onSaved: (String? value) {
-                          delta = value!;
+                          delta = (double.parse(value!) * 10).toString();
                         },
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
@@ -185,12 +185,14 @@ class NewTransactionPopUp extends StatelessWidget {
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
 
-                            validateAddNewTransaction(
-                                context,
-                                wallet?.id?.toString() ?? '',
-                                category?.id?.toString() ?? '',
-                                delta,
-                                desc);
+                            if (category != null && wallet != null) {
+                              validateAddNewTransaction(
+                                  context,
+                                  wallet!.id.toString(),
+                                  category!.id.toString(),
+                                  category!.isIncome ? delta : "-$delta",
+                                  desc);
+                            }
                           }
                           context.read<HomeBloc>().add(FetchWallets());
                           Navigator.of(context).pop();
