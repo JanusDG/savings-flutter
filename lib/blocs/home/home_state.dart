@@ -19,7 +19,7 @@ class HomeSuccess extends HomeState {
   final List<Transaction> transactions;
   HomeSuccess({required this.wallets, required this.transactions});
   @override
-  List<Object> get props => [transactions];
+  List<Object> get props => [wallets, transactions];
 }
 
 class HomeError extends HomeState {

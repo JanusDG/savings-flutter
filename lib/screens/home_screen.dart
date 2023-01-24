@@ -65,7 +65,7 @@ class _HomeState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     ElevatedButton(
-                      onPressed: () => navigateToNewWalletScreen(),
+                      onPressed: () => navigateToNewWalletScreen(context),
                       child: const Icon(Icons.add),
                     )
                   ],
@@ -121,16 +121,19 @@ class _HomeState extends State<HomeScreen> {
     context.read<HomeBloc>().add(FetchWallets());
   }
 
-  void navigateToNewWalletScreen() {
+  void navigateToNewWalletScreen(BuildContext context) {
     final bloc = context.read<HomeBloc>();
     if (bloc.state is HomeSuccess) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) {
-            return BlocProvider(
-              create: (context) => NewWalletBloc(
-                  bloc.walletRepository, bloc.uid, bloc.types, bloc.banks),
-              child: const NewWalletScreen(title: AppStrings.newWalletScreen),
+          builder: (newContext) {
+            return BlocProvider.value(
+              value: BlocProvider.of<HomeBloc>(context),
+              child: BlocProvider(
+                create: (context) => NewWalletBloc(
+                    bloc.walletRepository, bloc.uid, bloc.types, bloc.banks),
+                child: const NewWalletScreen(title: AppStrings.newWalletScreen),
+              ),
             );
           },
         ),

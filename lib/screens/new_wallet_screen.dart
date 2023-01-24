@@ -9,6 +9,7 @@ import 'package:savings_flutter/models/wallet_type.dart';
 
 import '../blocs/home/home_bloc.dart';
 import '../blocs/home/home_event.dart';
+import '../blocs/home/home_state.dart';
 import '../blocs/new_wallet/new_wallet_state.dart';
 import '../models/bank.dart';
 
@@ -93,23 +94,31 @@ class _NewWalletState extends State<NewWalletScreen> {
                       }).toList(),
                     )),
             const SizedBox(height: 20),
-            BlocBuilder<NewWalletBloc, NewWalletState>(
-                builder: (context, state) {
-              if (state.isLoading) {
-                return const CircularProgressIndicator();
-              }
-              if (state.isSubmitted) {
-                submitWallet();
-                return const SizedBox.shrink();
-              }
-              if (state.error != null) {
-                showToast(state.error!);
-              }
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(45)),
-                  onPressed: () => bloc.add(SubmitNewWallet()),
-                  child: const Text(AppStrings.submitBtn));
-            })
+            BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                return BlocBuilder<NewWalletBloc, NewWalletState>(
+                    builder: (context, state) {
+                  if (state.isLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (state.isSubmitted) {
+                    submitWallet();
+                    return const SizedBox.shrink();
+                  }
+                  if (state.error != null) {
+                    showToast(state.error!);
+                  }
+                  return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(45)),
+                      onPressed: () {
+                        bloc.add(SubmitNewWallet());
+                        context.read<HomeBloc>().add(FetchWallets());
+                      },
+                      child: const Text(AppStrings.submitBtn));
+                });
+              },
+            )
           ],
         ),
       ),
