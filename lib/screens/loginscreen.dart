@@ -4,6 +4,7 @@ import 'package:savings_flutter/models/login.dart';
 import 'package:savings_flutter/constants/app_strings.dart';
 
 import '../blocs/home/home_bloc.dart';
+import '../repositories/transaction_reporitory.dart';
 import '../repositories/wallet_repository.dart';
 import '../repositories/login_repository.dart';
 import 'home_screen.dart';
@@ -110,7 +111,7 @@ class _LoginState extends State<LoginScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return BlocProvider(
-                        create: (context) => HomeBloc(WalletRepository(), uid),
+                        create: (context) => HomeBloc(WalletRepository(), TransactionRepository(), uid),
                         child: const HomeScreen(title: AppStrings.appName),
                       );
                     },
