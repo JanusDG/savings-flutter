@@ -9,7 +9,7 @@ class WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+        padding: const EdgeInsets.only(bottom: 8),
         child: Card(
             child: Container(
           height: 100,

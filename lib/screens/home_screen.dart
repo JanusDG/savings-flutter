@@ -33,83 +33,86 @@ class _HomeState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => navigateToNewWalletScreen(),
-        child: const Icon(Icons.wallet),
-      ),
       resizeToAvoidBottomInset: false,
-      body: Center(
-        child: Column(
-          children: [
-            BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
-              if (state is HomeLoading) {
-                return const CircularProgressIndicator();
-              }
-              if (state is HomeError) {
-                return Column(mainAxisSize: MainAxisSize.min, children: [
-                  Text('Error: ${state.errorMsg}'),
-                  ElevatedButton(
-                    onPressed: () {
-                      fetchWallets();
-                    },
-                    child: const Text('Try again'),
-                  ),
-                ]);
-              }
-              if (state is HomeSuccess) {
-                return Column(
+      body: SafeArea(
+        minimum: const EdgeInsets.all(16),
+        child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+          if (state is HomeIdle) {
+            fetchWallets();
+          }
+          if (state is HomeLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is HomeError) {
+            return Center(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text('Error: ${state.errorMsg}'),
+              ElevatedButton(
+                onPressed: () {
+                  fetchWallets();
+                },
+                child: const Text('Try again'),
+              ),
+            ]));
+          }
+          if (state is HomeSuccess) {
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8, right: 8, top: 80),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: state.wallets.length,
-                          itemBuilder: (context, index) =>
-                              WalletCard(wallet: state.wallets[index])),
-                    ),
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text("Transactions",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 215),
-                        BlocProvider.value(
-                          value: BlocProvider.of<HomeBloc>(context),
-                          child: NewTransactionPopUp(),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 450,
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: state.transactions.length,
-                          itemBuilder: (context, index) {
-                            List<Wallet> wallet = state.wallets
-                                .where(((element) =>
-                                    element.id ==
-                                    state.transactions[index].walletid))
-                                .toList();
-
-                            return TransactionFeed(
-                                transaction: state.transactions[index],
-                                ownerWallet: wallet[0]);
-                          }),
+                    const Text("Wallets",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    ElevatedButton(
+                      onPressed: () => navigateToNewWalletScreen(),
+                      child: const Icon(Icons.add),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: state.wallets.length,
+                      itemBuilder: (context, index) =>
+                          WalletCard(wallet: state.wallets[index])),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Transactions",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    BlocProvider.value(
+                      value: BlocProvider.of<HomeBloc>(context),
+                      child: NewTransactionPopUp(),
                     ),
                   ],
-                );
-              }
+                ),
+                SizedBox(
+                  height: 400,
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: state.transactions.length,
+                      itemBuilder: (context, index) {
+                        List<Wallet> wallet = state.wallets
+                            .where(((element) =>
+                                element.id ==
+                                state.transactions[index].walletid))
+                            .toList();
 
-              return const SizedBox.shrink();
-            }),
-          ],
-        ),
+                        return TransactionFeed(
+                            transaction: state.transactions[index],
+                            ownerWallet: wallet[0]);
+                      }),
+                ),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        }),
       ),
     );
   }

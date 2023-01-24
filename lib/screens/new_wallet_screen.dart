@@ -7,6 +7,8 @@ import 'package:savings_flutter/constants/app_strings.dart';
 import 'package:savings_flutter/models/currency.dart';
 import 'package:savings_flutter/models/wallet_type.dart';
 
+import '../blocs/home/home_bloc.dart';
+import '../blocs/home/home_event.dart';
 import '../blocs/new_wallet/new_wallet_state.dart';
 import '../models/bank.dart';
 
@@ -97,7 +99,7 @@ class _NewWalletState extends State<NewWalletScreen> {
                 return const CircularProgressIndicator();
               }
               if (state.isSubmitted) {
-                navigateBack();
+                submitWallet();
                 return const SizedBox.shrink();
               }
               if (state.error != null) {
@@ -114,7 +116,7 @@ class _NewWalletState extends State<NewWalletScreen> {
     );
   }
 
-  void navigateBack() {
+  void submitWallet() {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => Navigator.pop(context, true));
   }
