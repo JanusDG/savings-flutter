@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:savings_flutter/models/transaction.dart';
 
+import '../models/category.dart';
+
 const loginIP =
     String.fromEnvironment('LOGIN_IP', defaultValue: 'failed to get env');
 
@@ -31,6 +33,25 @@ class TransactionRepository {
       return transactions;
     } else {
       throw Exception('Failed to fetch Transactions');
+    }
+  }
+
+  Future<List<Category>> fetchCategories() async {
+    final response = await http.get(
+      Uri.parse("http://$loginIP:8070/api/categories/all"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<Category> categories =
+          (jsonDecode(response.body)['categories'] as List)
+              .map((data) => Category.fromJson(data))
+              .toList();
+      return categories;
+    } else {
+      throw Exception('Failed to fetch categories');
     }
   }
 }

@@ -56,43 +56,43 @@ class _HomeState extends State<HomeScreen> {
             ]));
           }
           if (state is HomeSuccess) {
-            return Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Wallets",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    ElevatedButton(
-                      onPressed: () => navigateToNewWalletScreen(context),
-                      child: const Icon(Icons.add),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 200,
-                  child: ListView.builder(
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Wallets",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      ElevatedButton(
+                        onPressed: () => navigateToNewWalletScreen(context),
+                        child: const Icon(Icons.add),
+                      )
+                    ],
+                  ),
+                  ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       itemCount: state.wallets.length,
                       itemBuilder: (context, index) =>
                           WalletCard(wallet: state.wallets[index])),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Transactions",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    BlocProvider.value(
-                      value: BlocProvider.of<HomeBloc>(context),
-                      child: NewTransactionPopUp(),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 400,
-                  child: ListView.builder(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Transactions",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      BlocProvider.value(
+                        value: BlocProvider.of<HomeBloc>(context),
+                        child: NewTransactionPopUp(),
+                      ),
+                    ],
+                  ),
+                  ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       itemCount: state.transactions.length,
                       itemBuilder: (context, index) {
@@ -106,8 +106,8 @@ class _HomeState extends State<HomeScreen> {
                             transaction: state.transactions[index],
                             ownerWallet: wallet[0]);
                       }),
-                ),
-              ],
+                ],
+              ),
             );
           }
 

@@ -5,6 +5,8 @@ import '../blocs/home/home_bloc.dart';
 import '../blocs/home/home_event.dart';
 import '../blocs/home/home_state.dart';
 import '../constants/transaction_constants.dart';
+import '../models/category.dart';
+import '../models/wallet.dart';
 import '../repositories/transaction_reporitory.dart';
 
 class NewTransactionPopUp extends StatelessWidget {
@@ -61,13 +63,13 @@ class NewTransactionPopUp extends StatelessWidget {
 
   void showNewTransactionPopUp(
       BuildContext context, GlobalKey<FormState> formKey) {
-    String categoryId = "";
-    String walletId = "";
     String delta = "";
     String desc = "";
     showDialog(
       context: context,
       builder: (BuildContext newContext) {
+        Wallet? wallet;
+        Category? category;
         // context.read<HomeBloc>().add(FetchWallets());
         // return BlocBuilder<HomeBloc, HomeState>(
         //   builder: (context, state) {
@@ -94,34 +96,60 @@ class NewTransactionPopUp extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        onSaved: (String? value) {
-                          walletId = value!;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: "Wallet Id",
-                          hintText: "Number",
-                          // icon: Icon(Icons.lock)
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        onSaved: (String? value) {
-                          categoryId = value!;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: "Category Id",
-                          hintText: "1 or 2",
-                          // icon: Icon(Icons.lock)
-                        ),
-                      ),
-                    ),
+                    StatefulBuilder(builder: (_, StateSetter setState) {
+                      return Column(children: [
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<Wallet>(
+                              value: wallet,
+                              hint: const Text('Wallet'),
+                              isExpanded: true,
+                              onChanged: (Wallet? value) {
+                                setState(() {
+                                  wallet = value!;
+                                });
+                              },
+                              items: context
+                                  .read<HomeBloc>()
+                                  .wallets
+                                  .map<DropdownMenuItem<Wallet>>(
+                                      (Wallet value) {
+                                return DropdownMenuItem<Wallet>(
+                                  value: value,
+                                  child: Text(value.name),
+                                );
+                              }).toList(),
+                            )),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<Category>(
+                              value: category,
+                              hint: const Text('Category'),
+                              isExpanded: true,
+                              onChanged: (Category? value) {
+                                setState(() {
+                                  category = value!;
+                                });
+                              },
+                              items: context
+                                  .read<HomeBloc>()
+                                  .categories
+                                  .map<DropdownMenuItem<Category>>(
+                                      (Category value) {
+                                return DropdownMenuItem<Category>(
+                                  value: value,
+                                  child: Text(
+                                    value.name,
+                                    style: TextStyle(
+                                        color: value.isIncome
+                                            ? Colors.green
+                                            : Colors.red),
+                                  ),
+                                );
+                              }).toList(),
+                            )),
+                      ]);
+                    }),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
@@ -158,7 +186,11 @@ class NewTransactionPopUp extends StatelessWidget {
                             formKey.currentState!.save();
 
                             validateAddNewTransaction(
-                                context, walletId, categoryId, delta, desc);
+                                context,
+                                wallet?.id?.toString() ?? '',
+                                category?.id?.toString() ?? '',
+                                delta,
+                                desc);
                           }
                           context.read<HomeBloc>().add(FetchWallets());
                           Navigator.of(context).pop();
