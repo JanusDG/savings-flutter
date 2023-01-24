@@ -106,7 +106,7 @@ class _LoginState extends State<LoginScreen> {
             });
             futureLoginResp?.whenComplete(() {
               if (loginButtonText.isEmpty) {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) {
                       return BlocProvider(

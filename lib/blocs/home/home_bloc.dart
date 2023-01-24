@@ -8,18 +8,18 @@ import '../../models/wallet.dart';
 import '../../models/wallet_type.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final WalletRepository _walletRepository;
+  final WalletRepository walletRepository;
   final int uid;
   late List<WalletType> types;
   late List<Bank> banks;
 
-  HomeBloc(this._walletRepository, this.uid) : super(HomeIdle()) {
+  HomeBloc(this.walletRepository, this.uid) : super(HomeIdle()) {
     on<FetchWallets>((event, emit) async {
       try {
         emit(HomeLoading());
-        types = await _walletRepository.fetchWalletTypes();
-        banks = await _walletRepository.fetchBanks();
-        List<Wallet> wallets = await _walletRepository.fetchWallets(uid, types);
+        types = await walletRepository.fetchWalletTypes();
+        banks = await walletRepository.fetchBanks();
+        List<Wallet> wallets = await walletRepository.fetchWallets(uid, types);
         if (wallets.isEmpty) {
           emit(HomeEmpty());
         } else {

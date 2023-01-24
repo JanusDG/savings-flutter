@@ -10,4 +10,14 @@ class AppStrings {
 
   static const noWallets = 'You have no wallets yet';
   static const tryAgain = 'Try again';
+
+  static const name = 'Name';
+  static const type = 'Type';
+  static const bank = 'Bank';
+  static const balance = 'Balance';
+  static const currency = 'Currency';
+  static const submitBtn = 'Submit';
+
+  static emptyError (String field) => '$field cannot be empty';
+  static const balanceError = 'Balance must be a number';
 }

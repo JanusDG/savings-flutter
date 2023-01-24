@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:savings_flutter/blocs/home/home_event.dart';
+import 'package:savings_flutter/blocs/new_wallet/new_wallet_bloc.dart';
 import 'package:savings_flutter/constants/app_strings.dart';
 import 'package:savings_flutter/repositories/wallet_repository.dart';
+import 'package:savings_flutter/screens/new_wallet_screen.dart';
 import 'package:savings_flutter/widgets/wallet_card.dart';
 
 import '../blocs/home/home_bloc.dart';
@@ -26,6 +28,10 @@ class _HomeState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => navigateToNewWalletScreen(),
+        child: const Icon(Icons.wallet),
+      ),
       body: Center(
         child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
           if (state is HomeLoading) {
@@ -38,9 +44,7 @@ class _HomeState extends State<HomeScreen> {
             return Column(mainAxisSize: MainAxisSize.min, children: [
               Text(state.errorMsg),
               ElevatedButton(
-                onPressed: () {
-                  fetchWallets(context);
-                },
+                onPressed: () => fetchWallets(),
                 child: const Text(AppStrings.tryAgain),
               ),
             ]);
@@ -53,7 +57,7 @@ class _HomeState extends State<HomeScreen> {
                     WalletCard(wallet: state.wallets[index]));
           }
           if (state is HomeIdle) {
-            fetchWallets(context);
+            fetchWallets();
           }
           return const SizedBox.shrink();
         }),
@@ -61,7 +65,24 @@ class _HomeState extends State<HomeScreen> {
     );
   }
 
-  void fetchWallets(BuildContext context) {
+  void fetchWallets() {
     context.read<HomeBloc>().add(FetchWallets());
+  }
+
+  void navigateToNewWalletScreen() {
+    final bloc = context.read<HomeBloc>();
+    if (bloc.state is HomeSuccess) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return BlocProvider(
+              create: (context) => NewWalletBloc(
+                  bloc.walletRepository, bloc.uid, bloc.types, bloc.banks),
+              child: const NewWalletScreen(title: AppStrings.newWalletScreen),
+            );
+          },
+        ),
+      );
+    }
   }
 }

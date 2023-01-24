@@ -12,10 +12,19 @@ class Wallet {
   String bankName = '';
   String bankImg = 'logo.png';
 
+  Wallet(
+      {this.id,
+      this.typeId,
+      this.userId,
+      required this.name,
+      required this.balance,
+      required this.currency,
+      this.bankId});
+
   Wallet.fromJson(Map<String, dynamic> json, List<WalletType> types) {
-    id = json['id'];
-    typeId = json['s_id'];
-    typeName = types.firstWhere((type) => type.id == json['s_id']).name;
+    id = json['s_id'];
+    typeId = json['id'];
+    typeName = types.firstWhere((type) => type.id == json['id']).name;
     userId = json['s_uid'];
     name = json['s_name'];
     balance = json['s_balance'];
@@ -27,15 +36,13 @@ class Wallet {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['s_id'] = typeId;
-    data['s_uid'] = userId;
+    data['s_id'] = id.toString();
+    data['id'] = typeId.toString();
+    data['s_uid'] = userId.toString();
     data['s_name'] = name;
-    data['s_balance'] = balance;
+    data['s_balance'] = balance.toString();
     data['s_currency'] = currency;
-    data['b_id'] = bankId;
-    data['b_name'] = bankName;
-    data['b_img'] = bankImg;
+    data['b_id'] = bankId.toString();
     return data;
   }
 }
