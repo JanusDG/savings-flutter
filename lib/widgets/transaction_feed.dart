@@ -40,7 +40,7 @@ class TransactionFeed extends StatelessWidget {
                 Text(
                   "${transaction.delta / 10} ${ownerWallet.currency}",
                   style: TextStyle(
-                      color: transaction.categoryid == 1
+                      color: transaction.delta > 0
                           ? Colors.green.withOpacity(0.8)
                           : Colors.red.withOpacity(0.8),
                       fontSize: 14),

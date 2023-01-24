@@ -41,10 +41,22 @@ class _HomeState extends State<HomeScreen> {
           if (state is HomeLoading) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (state is HomeEmpty) {
+            return Center(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Text(AppStrings.noWallets),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => navigateToNewWalletScreen(context),
+                child: const Text('Add wallet'),
+              ),
+            ]));
+          }
           if (state is HomeError) {
             return Center(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
               Text('Error: ${state.errorMsg}'),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   fetchWallets();
@@ -123,21 +135,19 @@ class _HomeState extends State<HomeScreen> {
 
   void navigateToNewWalletScreen(BuildContext context) {
     final bloc = context.read<HomeBloc>();
-    if (bloc.state is HomeSuccess) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (newContext) {
-            return BlocProvider.value(
-              value: BlocProvider.of<HomeBloc>(context),
-              child: BlocProvider(
-                create: (context) => NewWalletBloc(
-                    bloc.walletRepository, bloc.uid, bloc.types, bloc.banks),
-                child: const NewWalletScreen(title: AppStrings.newWalletScreen),
-              ),
-            );
-          },
-        ),
-      );
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (newContext) {
+          return BlocProvider.value(
+            value: BlocProvider.of<HomeBloc>(context),
+            child: BlocProvider(
+              create: (context) => NewWalletBloc(
+                  bloc.walletRepository, bloc.uid, bloc.types, bloc.banks),
+              child: const NewWalletScreen(title: AppStrings.newWalletScreen),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:savings_flutter/constants/app_strings.dart';
 import 'package:savings_flutter/screens/loginscreen.dart';
 
 void main() {
@@ -15,6 +16,6 @@ class SavingsApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const LoginScreen(title: 'Flutter Demo Home Page'));
+        home: const LoginScreen(title: AppStrings.appName));
   }
 }

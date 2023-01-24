@@ -154,7 +154,7 @@ class NewTransactionPopUp extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         onSaved: (String? value) {
-                          delta = (double.parse(value!) * 10).toString();
+                          delta = (double.parse(value!) * 10).abs().toString();
                         },
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(

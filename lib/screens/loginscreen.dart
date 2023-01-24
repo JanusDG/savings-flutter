@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:savings_flutter/models/login.dart';
 import 'package:savings_flutter/constants/app_strings.dart';
+import 'package:savings_flutter/models/login.dart';
 
 import '../blocs/home/home_bloc.dart';
+import '../repositories/login_repository.dart';
 import '../repositories/transaction_reporitory.dart';
 import '../repositories/wallet_repository.dart';
-import '../repositories/login_repository.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -23,12 +23,10 @@ class _LoginState extends State<LoginScreen> {
   late String loginButtonText;
   late int uid;
 
-  // ignore: todo
-  // TODO remove initial value after developement is finished
   final TextEditingController _controllerUsername =
-      TextEditingController(text: "demo");
+      TextEditingController(text: "");
   final TextEditingController _controllerPassword =
-      TextEditingController(text: "demo");
+      TextEditingController(text: "");
 
   @override
   void initState() {
@@ -38,15 +36,13 @@ class _LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildLoginFields(),
-          futureBuilderPostPass(),
-        ],
-      )),
-    );
+        appBar: AppBar(title: Text(widget.title)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: buildLoginFields(),
+          ),
+        ));
   }
 
   void validateLogin() {
@@ -97,9 +93,10 @@ class _LoginState extends State<LoginScreen> {
           decoration: const InputDecoration(hintText: 'Enter username'),
         ),
         TextFormField(
-          controller: _controllerPassword,
-          decoration: const InputDecoration(hintText: 'Enter password'),
-        ),
+            controller: _controllerPassword,
+            decoration: const InputDecoration(hintText: 'Enter password'),
+            obscureText: true),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -111,7 +108,8 @@ class _LoginState extends State<LoginScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return BlocProvider(
-                        create: (context) => HomeBloc(WalletRepository(), TransactionRepository(), uid),
+                        create: (context) => HomeBloc(
+                            WalletRepository(), TransactionRepository(), uid),
                         child: const HomeScreen(title: AppStrings.appName),
                       );
                     },
@@ -123,28 +121,6 @@ class _LoginState extends State<LoginScreen> {
           child: const Text(AppStrings.loginButtonText),
         ),
       ],
-    );
-  }
-
-  FutureBuilder<LoginResp> futureBuilderPostPass() {
-    return FutureBuilder<LoginResp>(
-      future: futureLoginResp,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            children: [
-              Text('token = ${snapshot.data!.token}'),
-              Text('type = ${snapshot.data!.type}'),
-              Text('uid = ${snapshot.data!.uid}'),
-              Text('username = ${snapshot.data!.username}'),
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        return const CircularProgressIndicator();
-      },
     );
   }
 }
