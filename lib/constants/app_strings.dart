@@ -18,6 +18,12 @@ class AppStrings {
   static const currency = 'Currency';
   static const submitBtn = 'Submit';
 
+  static const wallet = 'Wallet';
+  static const category = 'Category';
+  static const delta = 'Delta';
+  static const description = 'Description';
+  static const addBtn = 'Add';
+
   static emptyError (String field) => '$field cannot be empty';
-  static const balanceError = 'Balance must be a number';
+  static numberError (String field) => '$field must be a number';
 }

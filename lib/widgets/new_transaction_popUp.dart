@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:savings_flutter/constants/app_strings.dart';
 
 import '../blocs/home/home_bloc.dart';
 import '../blocs/home/home_event.dart';
@@ -32,7 +33,7 @@ class NewTransactionPopUp extends StatelessWidget {
     );
   }
 
-  Widget _buildLoginErrorPopUp(
+  AlertDialog _buildLoginErrorPopUp(
       BuildContext context, String addTransactionPopUpText) {
     return AlertDialog(
       title: const Text(Transactionconstants.newTransactionError),
@@ -46,19 +47,37 @@ class NewTransactionPopUp extends StatelessWidget {
     );
   }
 
-  void validateAddNewTransaction(BuildContext context, String wid, String cid,
-      String delta, String description) {
-    futureNewTransactionResp =
-        getTranactionCreateResponce(wid, cid, delta, description);
+  void _showErrorPopUp(BuildContext context, String addTransactionPopUpText) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            _buildLoginErrorPopUp(context, addTransactionPopUpText));
+  }
 
-    futureNewTransactionResp?.then((value) {
-      if (value != "ok") {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) => _buildLoginErrorPopUp(
-                context, Transactionconstants.databaseError));
-      }
-    });
+  void validateAddNewTransaction(BuildContext context, Wallet? wallet,
+      Category? category, String delta, String description) {
+    if (wallet == null) {
+      _showErrorPopUp(context, AppStrings.emptyError(AppStrings.wallet));
+    } else if (category == null) {
+      _showErrorPopUp(context, AppStrings.emptyError(AppStrings.category));
+    } else if (delta == '') {
+      _showErrorPopUp(context, AppStrings.numberError(AppStrings.delta));
+    } else {
+      futureNewTransactionResp = getTranactionCreateResponce(
+          wallet.id.toString(),
+          category.id.toString(),
+          category.isIncome ? delta : "-$delta",
+          description);
+
+      futureNewTransactionResp?.then((value) {
+        if (value != "ok") {
+          _showErrorPopUp(context, Transactionconstants.databaseError);
+        } else {
+          context.read<HomeBloc>().add(FetchWallets());
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 
   void showNewTransactionPopUp(
@@ -74,27 +93,24 @@ class NewTransactionPopUp extends StatelessWidget {
         // return BlocBuilder<HomeBloc, HomeState>(
         //   builder: (context, state) {
         return AlertDialog(
-          content: Stack(
-            // overflow: Overflow.visible,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Add new Transaction"),
-              Positioned(
-                right: -40.0,
-                top: -40.0,
-                child: InkResponse(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.close),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Add new Transaction",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ),
+                  CloseButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
               ),
               Form(
                 key: formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     StatefulBuilder(builder: (_, StateSetter setState) {
                       return Column(children: [
@@ -102,7 +118,7 @@ class NewTransactionPopUp extends StatelessWidget {
                             padding: const EdgeInsets.all(8.0),
                             child: DropdownButton<Wallet>(
                               value: wallet,
-                              hint: const Text('Wallet'),
+                              hint: const Text(AppStrings.wallet),
                               isExpanded: true,
                               onChanged: (Wallet? value) {
                                 setState(() {
@@ -124,7 +140,7 @@ class NewTransactionPopUp extends StatelessWidget {
                             padding: const EdgeInsets.all(8.0),
                             child: DropdownButton<Category>(
                               value: category,
-                              hint: const Text('Category'),
+                              hint: const Text(AppStrings.category),
                               isExpanded: true,
                               onChanged: (Category? value) {
                                 setState(() {
@@ -154,12 +170,14 @@ class NewTransactionPopUp extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         onSaved: (String? value) {
-                          delta = (double.parse(value!) * 10).abs().toString();
+                          double? parsed = double.tryParse(value!);
+                          if (parsed != null) {
+                            delta = (parsed * 10).abs().toString();
+                          }
                         },
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          labelText: "Amount",
-                          hintText: "Number",
+                          labelText: AppStrings.delta,
                           // icon: Icon(Icons.lock)
                         ),
                       ),
@@ -171,31 +189,22 @@ class NewTransactionPopUp extends StatelessWidget {
                           desc = value!;
                         },
                         decoration: const InputDecoration(
-                          labelText: "Enter description",
-                          hintText: "Text",
+                          labelText: AppStrings.description,
                           // icon: Icon(Icons.lock)
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(top: 8.0),
                       child: ElevatedButton(
-                        child: const Text("Add"),
+                        child: const Text(AppStrings.addBtn),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
 
-                            if (category != null && wallet != null) {
-                              validateAddNewTransaction(
-                                  context,
-                                  wallet!.id.toString(),
-                                  category!.id.toString(),
-                                  category!.isIncome ? delta : "-$delta",
-                                  desc);
-                            }
+                            validateAddNewTransaction(
+                                context, wallet, category, delta, desc);
                           }
-                          context.read<HomeBloc>().add(FetchWallets());
-                          Navigator.of(context).pop();
                         },
                       ),
                     )

@@ -61,7 +61,7 @@ class NewWalletBloc extends Bloc<NewWalletEvent, NewWalletState> {
       return AppStrings.emptyError(AppStrings.balance);
     }
     if (double.tryParse(state.balance) == null) {
-      return AppStrings.balanceError;
+      return AppStrings.numberError(AppStrings.balance);
     }
     if (state.currency == null) {
       return AppStrings.emptyError(AppStrings.currency);
